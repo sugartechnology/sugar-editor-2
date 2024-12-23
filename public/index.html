@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sugar Model Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+    />
+    <link rel="stylesheet" href="css/dockview.css" />
+  </head>
+
+  <body
+    classname="dockview-theme-dark"
+    style="margin: 0px auto; height: 100svh; width: 100vw; overflow: hidden"
+  >
+    <link rel="stylesheet" href="css/main.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../lib/threejs/build/three.module.js",
+
+          "three/examples/": "./examples/",
+          "three-gpu-pathtracer": "https://cdn.jsdelivr.net/npm/three-gpu-pathtracer@0.0.23/build/index.module.js",
+          "three-mesh-bvh": "https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.7.4/build/index.module.js"
+        }
+      }
+    </script>
+
+    <link rel="stylesheet" href="libs/codemirror/codemirror.css" />
+    <link rel="stylesheet" href="libs/codemirror/theme/monokai.css" />
+    <script src="libs/codemirror/codemirror.js"></script>
+    <script src="libs/codemirror/mode/javascript.js"></script>
+    <script src="libs/codemirror/mode/glsl.js"></script>
+
+    <script src="libs/esprima.js"></script>
+    <script src="libs/jsonlint.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+
+    <link rel="stylesheet" href="libs/codemirror/addon/dialog.css" />
+    <link rel="stylesheet" href="libs/codemirror/addon/show-hint.css" />
+    <link rel="stylesheet" href="libs/codemirror/addon/tern.css" />
+
+    <script src="libs/codemirror/addon/dialog.js"></script>
+    <script src="libs/codemirror/addon/show-hint.js"></script>
+    <script src="libs/codemirror/addon/tern.js"></script>
+    <script src="libs/acorn/acorn.js"></script>
+    <script src="libs/acorn/acorn_loose.js"></script>
+    <script src="libs/acorn/walk.js"></script>
+    <script src="libs/ternjs/polyfill.js"></script>
+    <script src="libs/ternjs/signal.js"></script>
+    <script src="libs/ternjs/tern.js"></script>
+    <script src="libs/ternjs/def.js"></script>
+    <script src="libs/ternjs/comment.js"></script>
+    <script src="libs/ternjs/infer.js"></script>
+    <script src="libs/ternjs/doc_comment.js"></script>
+    <script src="libs/tern-threejs/threejs.js"></script>
+    <script src="libs/signals.min.js"></script>
+
+    <script src="SugarReactEditor.js" type="module"></script>
+
+    <div id="root"></div>
+  </body>
+</html>
