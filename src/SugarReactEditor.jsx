@@ -77,7 +77,8 @@ function App( { viewDomElement } ) {
     } );
   }, [] );
 
-  const dockState = Dockable.useDockable( ( state ) => {
+
+  const [dockState, _] = useState( Dockable.useDockable( ( state ) => {
     Dockable.createDockedPanel(
       state,
       state.rootPanel,
@@ -96,7 +97,7 @@ function App( { viewDomElement } ) {
       Dockable.DockMode.Right,
       <SidebarDockable />
     );
-  } );
+  } ) );
 
   function handleLogout() {
     localStorage.setItem( "auth", "" );
