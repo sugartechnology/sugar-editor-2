@@ -44,7 +44,7 @@ const ProductPartGroups = ({ dockState }) => {
 
     async function fetchProductParts(productId) {
         setIsLoading(true);
-        const parts = await Api.fetchProductParts(productId);
+        const parts = await Api.getProductParts(productId);
         const response = parts.map((item) => {
             return { value: item.id, label: item.name };
         });

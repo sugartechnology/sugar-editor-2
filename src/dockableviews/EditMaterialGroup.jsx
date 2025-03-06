@@ -208,7 +208,7 @@ export default function EditMaterialGroup({ materialGroup }) {
                     <Box sx={customStyleModal}>
 
                         <LazyListComponent
-                            apiFunction={Api.fetchMaterialListPaged}
+                            apiFunction={Api.listMaterials}
                             onClickItem={(item) => console.log(item)}
                             maxHeight={"500px"}
                             defaultViewType={1}

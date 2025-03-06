@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
 import * as Dockable from "@hlorenzi/react-dockable";
+import React from 'react';
+import AddButton from '../components/AddButton.jsx';
+import ListComponent from '../components/ListComponent.jsx';
 import { useProductContext } from '../context/ProductContext.jsx';
 import EditMaterialGroup from './EditMaterialGroup.jsx';
-import { Api } from '../api/Api.js';
-import ListComponent from '../components/ListComponent.jsx';
-import AddButton from '../components/AddButton.jsx';
 
 export default function MaterialGroupsList({ dockState }) {
     const ctx = Dockable.useContentContext();

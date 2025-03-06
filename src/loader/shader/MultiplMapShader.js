@@ -1,4 +1,4 @@
-import { Material, WebGLProgramParametersWithUniforms } from "three";
+import { Material } from "three";
 
 import * as normal_fragment_begin from "./parts/fragment/normal_fragment_begin.glsl";
 import * as normal_fragment_maps from "./parts/fragment/normal_fragment_maps.glsl";
@@ -29,7 +29,7 @@ const addBeforeCompile = ( material ) => {
 
 	/**
 	 *
-	 * @param {WebGLProgramParametersWithUniforms} shader
+	 * @param {uniforms: { [uniform: string]: {value: any} }} shader
 	 * @returns
 	 */
 	material.onBeforeCompile = ( shader ) => {

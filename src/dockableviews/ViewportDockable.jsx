@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 function ViewportDockable({ viewDomElement }) {
     const ctx = Dockable.useContentContext();
     ctx.setTitle("Viewport");
+    // const [productName, setProductName] = useState("");
 
     const ref = React.useRef();
 
@@ -13,6 +14,8 @@ function ViewportDockable({ viewDomElement }) {
 
 
     useEffect(() => {
+        // console.log(viewDomElement);
+
         viewDomElement.style.position = undefined;
         viewDomElement.style.width = "100%";
         viewDomElement.style.height = "100%";
@@ -22,7 +25,9 @@ function ViewportDockable({ viewDomElement }) {
 
     }, [viewDomElement]);
 
-    return <div ref={ref}></div>;
+    return <div ref={ref}>
+        {/* <div id="productNameViewport">{productName && productName}</div> */}
+    </div>;
 }
 
 
