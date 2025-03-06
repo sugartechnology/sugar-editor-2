@@ -26,7 +26,8 @@ export class Api {
         Authorization: `Basic ${btoa(string)}`,
       },
     });
-    if (data.status == 200) localStorage.setItem("auth", `Basic ${btoa(string)}`);
+    if (data.status == 200)
+      localStorage.setItem("auth", `Basic ${btoa(string)}`);
 
     return data.status;
   }
@@ -95,7 +96,7 @@ export class Api {
       },
     });
     if (response.status === 200) return await response.json();
-    else alert("Error");
+    else console.error("Error");
   }
 
   static async fetchProduct(productId: number, companyId: number) {
@@ -112,7 +113,6 @@ export class Api {
 
     return await data.json();
   }
-
 
   static async updateProduct(
     id: number,
@@ -168,13 +168,16 @@ export class Api {
   static async fetchMaterialGroups(companyId: number) {
     if (token) {
       try {
-        const response = await fetch(BACKEND_API + "material/group/list?companyId=" + companyId, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        });
+        const response = await fetch(
+          BACKEND_API + "material/group/list?companyId=" + companyId,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+          }
+        );
 
         return await (response as any).json();
       } catch (err) {
@@ -186,13 +189,16 @@ export class Api {
   static async fetchMaterialSet(materialGroupId: number) {
     if (token && materialGroupId) {
       try {
-        const response = await fetch(BACKEND_API + "material/group/materials/" + materialGroupId, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        });
+        const response = await fetch(
+          BACKEND_API + "material/group/materials/" + materialGroupId,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+          }
+        );
 
         return await (response as any).json();
       } catch (err) {
@@ -204,14 +210,17 @@ export class Api {
   static async updateProductPartGroup(productPartGroup: ProductPartGroup) {
     if (token) {
       try {
-        const response = await fetch(BACKEND_API + "product/material/group/part/update", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-          body: JSON.stringify(productPartGroup),
-        });
+        const response = await fetch(
+          BACKEND_API + "product/material/group/part/update",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+            body: JSON.stringify(productPartGroup),
+          }
+        );
 
         return response.status;
       } catch (err) {
@@ -223,13 +232,16 @@ export class Api {
   static async fetchProductParts(productId: number) {
     if (token) {
       try {
-        const response = await fetch(BACKEND_API + "material/list/partAndRules/" + productId, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        });
+        const response = await fetch(
+          BACKEND_API + "material/list/partAndRules/" + productId,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+          }
+        );
 
         return response.json();
       } catch (err) {
@@ -241,14 +253,17 @@ export class Api {
   static async addProductPartGroup(productPartGroup: ProductPartGroup) {
     if (token) {
       try {
-        const response = await fetch(BACKEND_API + "product/material/group/part/add", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-          body: JSON.stringify(productPartGroup),
-        });
+        const response = await fetch(
+          BACKEND_API + "product/material/group/part/add",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+            body: JSON.stringify(productPartGroup),
+          }
+        );
 
         return response.status;
       } catch (err) {
@@ -278,13 +293,16 @@ export class Api {
   static async deleteProductPartGroup(id: number) {
     if (token) {
       try {
-        const response = await fetch(BACKEND_API + "product/material/group/part/delete/" + id, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        });
+        const response = await fetch(
+          BACKEND_API + "product/material/group/part/delete/" + id,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+          }
+        );
 
         return response.status;
       } catch (err) {
@@ -316,13 +334,17 @@ export class Api {
     });
 
     if (response.status === 200) return await response.json();
-    else alert("Error");
+    else console.error("Error");
   }
   static async fetchMaterialListPaged(pageNumber: string, searchKey?: string) {
     if (token) {
       if (searchKey) {
         const response = await fetch(
-          BACKEND_API + "material/listAndSearch?page=" + pageNumber + "&searchKey=" + searchKey,
+          BACKEND_API +
+            "material/listAndSearch?page=" +
+            pageNumber +
+            "&searchKey=" +
+            searchKey,
           {
             headers: {
               "Content-Type": "application/json",
@@ -332,12 +354,15 @@ export class Api {
         );
         return await (response as any).json();
       } else {
-        const response = await fetch(BACKEND_API + "material/listAndSearch?page=" + pageNumber, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        });
+        const response = await fetch(
+          BACKEND_API + "material/listAndSearch?page=" + pageNumber,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+          }
+        );
         return await (response as any).json();
       }
     }

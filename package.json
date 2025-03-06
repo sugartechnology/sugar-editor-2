@@ -5,8 +5,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "build": "cd lib/threejs && npm run build && cd ../../ && rollup -c",
-    "start": "cd lib/threejs && npm run build && cd ../../ && rollup -c -w",
+    "build": " rollup -c",
+    "start": " rollup -c -w",
+    "start:quiet": "rollup -c -w --logLevel error",
     "prod": "rollup -c rollup.config.prod.js",
     "dev": "rollup -c rollup.config.dev.js",
     "clean": "rm -rf dist"
@@ -38,7 +39,7 @@
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-cleaner": "^1.0.0",
     "rollup-plugin-terser": "^7.0.2",
-    "three": "^0.161.0",
+    "three": "^0.174.0",
     "three-bvh-csg": "^0.0.16",
     "three-gpu-pathtracer": "^0.0.23",
     "tslib": "^2.6.2"

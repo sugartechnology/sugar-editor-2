@@ -7,7 +7,7 @@ import json from "@rollup/plugin-json";
 import replace from "@rollup/plugin-replace";
 import babel from "rollup-plugin-babel";
 import livereload from "rollup-plugin-livereload";
-import postcss from 'rollup-plugin-postcss';
+import postcss from "rollup-plugin-postcss";
 import serve from "rollup-plugin-serve";
 
 export default {
@@ -27,8 +27,9 @@ export default {
     resolve(),
     typescript(),
     commonjs(),
-    postcss({ // for css import 
-      extensions: ['.css']
+    postcss({
+      // for css import
+      extensions: [".css"],
     }),
     babel({
       exclude: "node_modules/**", // Node modüllerini hariç tut
@@ -44,14 +45,14 @@ export default {
     }),
     // !process.env.ROLLUP_WATCH && terser(),
     process.env.ROLLUP_WATCH &&
-    serve({
-      open: true, // Sunucu başladığında tarayıcıyı otomatik aç
-      contentBase: ["dist", "public", "src", "lib"], // Hem public hem de dist klasörlerini serve et
-      port: 7800,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-      },
-    }),
+      serve({
+        open: true, // Sunucu başladığında tarayıcıyı otomatik aç
+        contentBase: ["dist", "public", "src", "lib"], // Hem public hem de dist klasörlerini serve et
+        port: 7801,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      }),
     process.env.ROLLUP_WATCH && livereload(),
   ],
 };

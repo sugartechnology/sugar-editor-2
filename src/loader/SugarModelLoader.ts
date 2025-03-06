@@ -45,7 +45,10 @@ const modelCache: Map<string, SugarModel> = new Map<string, SugarModel>();
 
 const partCache: Map<string, SugarPart> = new Map<string, SugarPart>();
 
-const materialCache: Map<string, SugarMaterial> = new Map<string, SugarMaterial>();
+const materialCache: Map<string, SugarMaterial> = new Map<
+  string,
+  SugarMaterial
+>();
 
 const createPart = (partData: any) => {
   let part = partCache.get(partData.id);
@@ -204,9 +207,11 @@ export class SugarModel implements SugarAsset {
 
     let partMaterialGroups;
     if (data.partMaterialGroups) {
-      partMaterialGroups = data.partMaterialGroups.map((partMaterialGroup: any) => {
-        return new SugarPartGroup(partMaterialGroup, materials, parts);
-      });
+      partMaterialGroups = data.partMaterialGroups.map(
+        (partMaterialGroup: any) => {
+          return new SugarPartGroup(partMaterialGroup, materials, parts);
+        }
+      );
     }
 
     //const sugarModel = new SugarModel(data);
@@ -221,7 +226,9 @@ export class SugarModel implements SugarAsset {
     const asyncFunctions = [];
 
     const loader = new LoaderManager(new Sugar3DLoader());
-    asyncFunctions.push(loader.load(data.gltf, { onProgress: options?.onProgress }));
+    asyncFunctions.push(
+      loader.load(data.gltf, { onProgress: options?.onProgress })
+    );
 
     if (parts) {
       const partLoaders = forEachAsync(parts, async (part: any) => {
@@ -232,19 +239,30 @@ export class SugarModel implements SugarAsset {
 
     //
     if (partMaterialGroups) {
-      const partLoaders = forEachAsync(partMaterialGroups, async (partMaterialGroupLoader: any) => {
-        await partMaterialGroupLoader.load();
-      });
+      const partLoaders = forEachAsync(
+        partMaterialGroups,
+        async (partMaterialGroupLoader: any) => {
+          await partMaterialGroupLoader.load();
+        }
+      );
       asyncFunctions.push(partLoaders);
     }
 
     if (options?.onBeforeLoad) options?.onBeforeLoad(sugarModel);
 
     if (options?.forceSync) {
-      await this._loadModel(sugarModel, Promise.all(asyncFunctions), options?.onAfterLoad);
+      await this._loadModel(
+        sugarModel,
+        Promise.all(asyncFunctions),
+        options?.onAfterLoad
+      );
       return sugarModel;
     } else {
-      this._loadModel(sugarModel, Promise.all(asyncFunctions), options?.onAfterLoad);
+      this._loadModel(
+        sugarModel,
+        Promise.all(asyncFunctions),
+        options?.onAfterLoad
+      );
       return sugarModel;
     }
   }
@@ -545,7 +563,11 @@ export class SugarPartGroup implements SugarAsset {
     return this._isLoaded;
   }
 
-  constructor(partMaterialGroup: any, materials: SugarMaterial[], parts: SugarPart[]) {
+  constructor(
+    partMaterialGroup: any,
+    materials: SugarMaterial[],
+    parts: SugarPart[]
+  ) {
     this._data = partMaterialGroup;
 
     const code = this._data.code;
@@ -554,11 +576,12 @@ export class SugarPartGroup implements SugarAsset {
     //find default material
     let filteredMaterials = materials.filter((material) => {
       return (
-        material.code.toUpperCase().trim() === code.toUpperCase().trim() ||
-        material.id == defaultMaterialCode
+        material?.code?.toUpperCase().trim() === code?.toUpperCase().trim() ||
+        material?.id == defaultMaterialCode
       );
     });
-    if (filteredMaterials && filteredMaterials.length > 0) this._material = filteredMaterials[0];
+    if (filteredMaterials && filteredMaterials.length > 0)
+      this._material = filteredMaterials[0];
 
     //find by code parts
     this._parts = parts.filter((part) => {
