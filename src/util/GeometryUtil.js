@@ -1,10 +1,10 @@
 import {
-  Box3,
-  BufferAttribute,
-  BufferGeometry,
-  Mesh,
-  MeshBasicMaterial,
-  Object3D,
+	Box3,
+	BufferAttribute,
+	BufferGeometry,
+	Mesh,
+	MeshBasicMaterial,
+	Object3D,
 } from "three";
 
 export const DEFAULT_ROOM = {
@@ -36,9 +36,14 @@ export const DEFAULT_ROOM_LARGE = {
     { start: 3, end: 0, hidden: false },
   ],}
 
-export function calculateBoundingBoxAll(model: Object3D): Mesh[] {
-  const bounds: Mesh[] = [];
-  (model as Object3D).traverse((o) => {
+/**
+ *
+ * @param {Object3D} model
+ * @returns {Mesh[]}
+ */
+export function calculateBoundingBoxAll(model) {
+  const bounds = [];
+  model.traverse((o) => {
     if (o instanceof Mesh) {
       bounds.push(calculateBoundingBox(o));
     }
@@ -46,7 +51,12 @@ export function calculateBoundingBoxAll(model: Object3D): Mesh[] {
   return bounds;
 }
 
-export function calculateBoundingBox(model: Mesh): Mesh {
+/**
+ *
+ * @param {Mesh} model
+ * @returns {Mesh}
+ */
+export function calculateBoundingBox(model) {
   const box3 = new Box3();
   box3.setFromObject(model, true);
 

@@ -1,56 +1,25 @@
 import {
-  Box3,
-  Color,
-  Material,
-  Mesh,
-  MeshPhysicalMaterial,
-  MeshStandardMaterial,
-  Object3D,
-  SRGBColorSpace,
-  Texture,
-  Vector3,
+	Box3,
+	Color,
+	Object3D,
+	SRGBColorSpace,
+	Vector3
 } from "three";
 import { OBB } from "three/examples/jsm/math/OBB.js";
 import { forEachAsync } from "../util/Collection";
 import { calculateBoundingBoxAll } from "../util/GeometryUtil";
+import { listMaterialByName } from "../util/SceneUtil";
 import { LoaderManager } from "./Loader";
 import { Sugar3DLoader } from "./Sugar3DLoader";
 import { SugarTextureLoader } from "./SugarTextureLoader";
 
-export const listMaterialByName = (object: Object3D, name: string) => {
-  const r: Material[] = [];
-  object.traverse((cobj) => {
-    if (
-      cobj instanceof Mesh &&
-      cobj.material.name === name &&
-      !r.includes(cobj.material as Material)
-    ) {
-      r.push(cobj.material);
-    }
-  });
+const modelCache = new Map();
 
-  return r;
-};
+const partCache = new Map();
 
-interface SugarAsset {
-  get data(): any;
-  get id(): string;
-  get name(): string;
-  get code(): string;
-  get thumbnailFileUrl(): string;
-  get loaded(): boolean;
-}
+const materialCache = new Map();
 
-const modelCache: Map<string, SugarModel> = new Map<string, SugarModel>();
-
-const partCache: Map<string, SugarPart> = new Map<string, SugarPart>();
-
-const materialCache: Map<string, SugarMaterial> = new Map<
-  string,
-  SugarMaterial
->();
-
-const createPart = (partData: any) => {
+const createPart = (partData) => {
   let part = partCache.get(partData.id);
   if (!part) {
     part = new SugarPart(partData);
@@ -59,7 +28,7 @@ const createPart = (partData: any) => {
   return part;
 };
 
-const createMaterial = (materialData: any) => {
+const createMaterial = (materialData) => {
   let material = materialCache.get(materialData.id);
   if (!material) {
     material = new SugarMaterial(materialData);
@@ -73,47 +42,40 @@ export const clearCache = () => {
   materialCache.clear();
 };
 
-/**
- *
- *
- *
- *
- *
- */
-export class SugarModel implements SugarAsset {
-  parts?: SugarPart[];
-  partMaterialGroups?: SugarPartGroup[];
-  materials?: SugarMaterial[];
+export class SugarModel {
+  parts;
+  partMaterialGroups;
+  materials;
 
-  private _model: Object3D;
-  private _data: any;
-  private _bound: any;
-  private _bounds: Mesh[] = [];
-  private _loaded = false;
+  _model;
+  _data;
+  _bound;
+  _bounds = [];
+  _loaded = false;
 
-  constructor(data: any) {
+  constructor(data) {
     this._data = data;
     this._model = new Object3D();
   }
 
-  get data(): any {
+  get data() {
     return this._data;
   }
-  get id(): string {
+  get id() {
     return this._data.id;
   }
-  get name(): string {
+  get name() {
     return this._data.name;
   }
-  get code(): string {
+  get code() {
     return this._data.id;
   }
 
-  get thumbnailFileUrl(): string {
+  get thumbnailFileUrl() {
     return this._data.thumbnailFileUrl;
   }
 
-  get model(): Object3D {
+  get model() {
     return this._model;
   }
 
@@ -124,8 +86,8 @@ export class SugarModel implements SugarAsset {
     return this._bounds;
   }
 
-  private _localObb = new OBB();
-  private _worldObb = new OBB();
+  _localObb = new OBB();
+  _worldObb = new OBB();
 
   get localObb() {
     return this._localObb.clone();
@@ -137,10 +99,10 @@ export class SugarModel implements SugarAsset {
     return this._worldObb;
   }
 
-  set model(value: Object3D) {
-    if (this._model) (this._model as any).model = undefined;
+  set model(value) {
+    if (this._model) this._model.model = undefined;
     this._model = value;
-    (this._model as any).model = this;
+    this._model.model = this;
     this._bounds = calculateBoundingBoxAll(this._model);
 
     const box = new Box3();
@@ -159,115 +121,79 @@ export class SugarModel implements SugarAsset {
     return this._loaded;
   }
 
-  set loaded(value: boolean) {
+  set loaded(value) {
     this._loaded = value;
   }
 
-  async _loadModel(
-    sugarModel: SugarModel,
-    loadPromises: Promise<any[]>,
-    onAfterLoad?: (sugarModel: SugarModel, results: any[]) => void
-  ) {
+  async _loadModel(sugarModel, loadPromises, onAfterLoad) {
     const results = await loadPromises;
 
     if (onAfterLoad) onAfterLoad(sugarModel, results);
-    //after load
 
     sugarModel.model = results[0];
     sugarModel.loaded = true;
     return sugarModel;
   }
 
-  async load(
-    data: any,
-    options?: {
-      forceSync?: boolean;
-      onBeforeLoad?: (product: SugarModel) => void;
-      onAfterLoad?: (sugarModel: SugarModel, results: any[]) => void;
-      onProgress?: (progress: ProgressEvent) => void;
-    }
-  ): Promise<SugarModel | undefined> {
-    /*if (modelCache.get(data.id)) {
-      return modelCache.get(data.id);
-    }*/
-
-    let materials: SugarMaterial[] = [];
+  async load(data, options) {
+    let materials = [];
     if (data.parts) {
-      materials = data.materials.map((material: any) => {
+      materials = data.materials.map((material) => {
         return createMaterial(material);
       });
     }
-    //
-    let parts: SugarPart[] = [];
+
+    let parts = [];
     if (data.parts) {
-      parts = data.parts.map((part: any) => {
+      parts = data.parts.map((part) => {
         return createPart(part);
       });
     }
 
     let partMaterialGroups;
     if (data.partMaterialGroups) {
-      partMaterialGroups = data.partMaterialGroups.map(
-        (partMaterialGroup: any) => {
-          return new SugarPartGroup(partMaterialGroup, materials, parts);
-        }
-      );
+      partMaterialGroups = data.partMaterialGroups.map((partMaterialGroup) => {
+        return new SugarPartGroup(partMaterialGroup, materials, parts);
+      });
     }
 
-    //const sugarModel = new SugarModel(data);
     const sugarModel = this;
     sugarModel._data = data;
     sugarModel.materials = materials;
     sugarModel.parts = parts;
     sugarModel.partMaterialGroups = partMaterialGroups;
-    //modelCache.set(data.id, sugarModel);
-    //load begins
 
     const asyncFunctions = [];
 
     const loader = new LoaderManager(new Sugar3DLoader());
-    asyncFunctions.push(
-      loader.load(data.gltf, { onProgress: options?.onProgress })
-    );
+    asyncFunctions.push(loader.load(data.gltf, { onProgress: options?.onProgress }));
 
     if (parts) {
-      const partLoaders = forEachAsync(parts, async (part: any) => {
+      const partLoaders = forEachAsync(parts, async (part) => {
         await part.load();
       });
       asyncFunctions.push(partLoaders);
     }
 
-    //
     if (partMaterialGroups) {
-      const partLoaders = forEachAsync(
-        partMaterialGroups,
-        async (partMaterialGroupLoader: any) => {
-          await partMaterialGroupLoader.load();
-        }
-      );
+      const partLoaders = forEachAsync(partMaterialGroups, async (partMaterialGroupLoader) => {
+        await partMaterialGroupLoader.load();
+      });
       asyncFunctions.push(partLoaders);
     }
 
     if (options?.onBeforeLoad) options?.onBeforeLoad(sugarModel);
 
     if (options?.forceSync) {
-      await this._loadModel(
-        sugarModel,
-        Promise.all(asyncFunctions),
-        options?.onAfterLoad
-      );
+      await this._loadModel(sugarModel, Promise.all(asyncFunctions), options?.onAfterLoad);
       return sugarModel;
     } else {
-      this._loadModel(
-        sugarModel,
-        Promise.all(asyncFunctions),
-        options?.onAfterLoad
-      );
+      this._loadModel(sugarModel, Promise.all(asyncFunctions), options?.onAfterLoad);
       return sugarModel;
     }
   }
 
-  static applyMaterials(sugarModel: SugarModel, results: any[]) {
+  static applyMaterials(sugarModel, results) {
     if (sugarModel.model) {
       const parent = sugarModel.model.parent;
       parent?.remove(sugarModel.model);
@@ -277,7 +203,7 @@ export class SugarModel implements SugarAsset {
       results[0].position.copy(sugarModel.model.position);
     }
 
-    const scene = (sugarModel as any).scene;
+    const scene = sugarModel.scene;
     scene?.removeModel(sugarModel);
 
     sugarModel.model = results[0];
@@ -294,45 +220,38 @@ export class SugarModel implements SugarAsset {
   }
 }
 
-/**
- *
- *
- *
- *
- *
- */
-export class SugarPart implements SugarAsset {
-  private _data: any;
-  private _isLoaded = false;
+export class SugarPart {
+  _data;
+  _isLoaded = false;
 
-  materials: SugarMaterial[] = [];
-  baseAoMap: Texture | undefined = undefined;
-  baseNormalMap: Texture | undefined = undefined;
+  materials = [];
+  baseAoMap;
+  baseNormalMap;
 
-  constructor(part: any) {
+  constructor(part) {
     this._data = part;
-    this.materials = this._data.materials.map((id: any) => {
+    this.materials = this._data.materials.map((id) => {
       return materialCache.get(id);
     });
   }
 
-  get data(): any {
+  get data() {
     return this._data;
   }
 
-  get id(): string {
+  get id() {
     return this._data.id;
   }
 
-  get name(): string {
+  get name() {
     return this._data.name;
   }
 
-  get code(): string {
+  get code() {
     return this._data.code;
   }
 
-  get thumbnailFileUrl(): string {
+  get thumbnailFileUrl() {
     return this._data.thumbnailFileUrl;
   }
 
@@ -363,10 +282,10 @@ export class SugarPart implements SugarAsset {
     this._isLoaded = true;
   }
 
-  async apply(object: Object3D) {
+  async apply(object) {
     const materials = listMaterialByName(object, this._data.name);
     materials.forEach((material) => {
-      const mMap = material as MeshStandardMaterial | MeshPhysicalMaterial;
+      const mMap = material;
       if (this.baseAoMap) {
         mMap.aoMap = this.baseAoMap;
         this.baseAoMap.flipY = false;
@@ -382,37 +301,30 @@ export class SugarPart implements SugarAsset {
   }
 }
 
-/**
- *
- *
- *
- *
- *
- */
-export class SugarMaterial implements SugarAsset {
-  private _data: any;
-  private _isLoaded = false;
+export class SugarMaterial {
+  _data;
+  _isLoaded = false;
 
-  constructor(data: any) {
+  constructor(data) {
     this._data = data;
   }
 
-  get data(): any {
+  get data() {
     return this._data;
   }
-  get id(): string {
+  get id() {
     return this._data.id;
   }
 
-  get name(): string {
+  get name() {
     return this._data.name;
   }
 
-  get code(): string {
+  get code() {
     return this._data.groupBy_;
   }
 
-  get thumbnailFileUrl(): string {
+  get thumbnailFileUrl() {
     return this._data.thumbnailFile;
   }
 
@@ -420,11 +332,11 @@ export class SugarMaterial implements SugarAsset {
     return this._isLoaded;
   }
 
-  private _map: Texture | undefined;
-  private _normalMap: Texture | undefined;
-  private _aoMap: Texture | undefined;
-  private _roughnessMap: Texture | undefined;
-  private _emissiveMap: Texture | undefined;
+  _map;
+  _normalMap;
+  _aoMap;
+  _roughnessMap;
+  _emissiveMap;
 
   async load() {
     if (this._isLoaded) return;
@@ -456,8 +368,8 @@ export class SugarMaterial implements SugarAsset {
     this._isLoaded = true;
   }
 
-  async apply(material: Material, options: { size: 1 }) {
-    const mMap = material as MeshStandardMaterial | MeshPhysicalMaterial;
+  async apply(material, options) {
+    const mMap = material;
 
     const color = this._data.color;
     mMap.color = color != null ? new Color("#" + color) : new Color(0xffffff);
@@ -491,11 +403,6 @@ export class SugarMaterial implements SugarAsset {
       mMap.normalMap.repeat.y = size;
     }
 
-    /*mMap.aoMap = null;
-      if (this._aoMap) {
-        mMap.aoMap = this._aoMap;
-      }*/
-
     mMap.roughnessMap = null;
     mMap.metalnessMap = null;
     mMap.metalness = this._data.metallicFactor;
@@ -520,42 +427,36 @@ export class SugarMaterial implements SugarAsset {
   }
 }
 
-/**
- *
- *
- *
- *
- */
-export class SugarPartGroup implements SugarAsset {
-  private _data: any;
+export class SugarPartGroup {
+  _data;
 
-  private _materials: SugarMaterial[] = [];
-  private _parts: SugarPart[] = [];
-  private _material?: SugarMaterial;
-  private _model?: Object3D;
-  private _isLoaded = false;
+  _materials = [];
+  _parts = [];
+  _material;
+  _model;
+  _isLoaded = false;
 
-  get data(): any {
+  get data() {
     return this._data;
   }
-  get id(): string {
+  get id() {
     return this._data.id;
   }
-  get name(): string {
+  get name() {
     return this._data.title;
   }
-  get code(): string {
+  get code() {
     return this._data.code;
   }
-  get material(): SugarMaterial | undefined {
+  get material() {
     return this._material;
   }
-  set material(value: SugarMaterial) {
+  set material(value) {
     this._material = value;
-    this.apply(this._model!);
+    this.apply(this._model);
   }
 
-  get thumbnailFileUrl(): string {
+  get thumbnailFileUrl() {
     return this._data.thumbnailFileUrl;
   }
 
@@ -563,32 +464,24 @@ export class SugarPartGroup implements SugarAsset {
     return this._isLoaded;
   }
 
-  constructor(
-    partMaterialGroup: any,
-    materials: SugarMaterial[],
-    parts: SugarPart[]
-  ) {
+  constructor(partMaterialGroup, materials, parts) {
     this._data = partMaterialGroup;
 
     const code = this._data.code;
     const defaultMaterialCode = this._data.defaultMaterialCode;
 
-    //find default material
     let filteredMaterials = materials.filter((material) => {
       return (
-        material?.code?.toUpperCase().trim() === code?.toUpperCase().trim() ||
-        material?.id == defaultMaterialCode
+        material.code.toUpperCase().trim() === code.toUpperCase().trim() ||
+        material.id == defaultMaterialCode
       );
     });
-    if (filteredMaterials && filteredMaterials.length > 0)
-      this._material = filteredMaterials[0];
+    if (filteredMaterials && filteredMaterials.length > 0) this._material = filteredMaterials[0];
 
-    //find by code parts
     this._parts = parts.filter((part) => {
       return part.code === code;
     });
 
-    //find possible materials
     this._materials = [];
     this._parts.forEach((part) => {
       this._materials = [...part.materials, ...this._materials];
@@ -596,21 +489,13 @@ export class SugarPartGroup implements SugarAsset {
 
     this._materials = this._materials
       .filter((m) => m)
-      .reduce((acc: SugarMaterial[], current) => {
+      .reduce((acc, current) => {
         const x = acc.findIndex((item) => item.id === current.id);
         if (x <= -1) {
           acc.push(current);
         }
         return acc;
       }, []);
-
-    /*.map((part) => {
-        return createPart(part);
-      });*/
-
-    //merge with group parts part
-    /*if (this._partMaterialGroup.part)
-      this._parts = [...this._parts, ...this._partMaterialGroup.part];*/
   }
 
   async load() {
@@ -618,13 +503,12 @@ export class SugarPartGroup implements SugarAsset {
     this._isLoaded = true;
   }
 
-  async apply(object: Object3D) {
+  async apply(object) {
     this._model = object;
     await this._material?.load();
     this._parts.forEach((part) => {
       let materialInstances = listMaterialByName(object, part.name);
       materialInstances.forEach((materialInstance) => {
-        //can a part have multiple materials
         this._material?.apply(materialInstance, { size: part.size });
       });
     });

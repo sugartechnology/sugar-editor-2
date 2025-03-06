@@ -1,5 +1,4 @@
 import resolve from "@rollup/plugin-node-resolve";
-import typescript from "@rollup/plugin-typescript";
 
 import clean from "@rollup-extras/plugin-clean";
 import commonjs from "@rollup/plugin-commonjs";
@@ -12,10 +11,7 @@ import serve from "rollup-plugin-serve";
 
 export default {
   input: [
-    // "src/SugarRoomDesigner.tsx",
-    // "src/SugarModelViewer.tsx",
     "src/SugarReactEditor.jsx",
-    // "src/SugarModelViewerTrial.tsx",
   ],
   output: {
     dir: "dist",
@@ -25,7 +21,6 @@ export default {
   },
   plugins: [
     resolve(),
-    typescript(),
     commonjs(),
     postcss({
       // for css import

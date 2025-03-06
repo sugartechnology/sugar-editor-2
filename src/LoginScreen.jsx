@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Api } from './api/Api';
-import { ThreeDot } from 'react-loading-indicators';
 import { MdError } from "react-icons/md";
+import { ThreeDot } from 'react-loading-indicators';
+import { Api } from './api/Api';
 
 export default function LoginScreen({ setIsAuth }) {
 

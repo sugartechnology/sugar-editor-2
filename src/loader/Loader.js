@@ -1,20 +1,15 @@
 import { Object3D } from "three";
 import { waitTill } from "../util/Wait";
 
-const cacheMap: any = {};
+const cacheMap = {};
 const log = false;
 
-export interface Loader {
-  load(usl: string, options?: {}): any;
-}
 export class LoaderManager {
-  private _loader: Loader;
-
-  constructor(loader: Loader) {
+  constructor(loader) {
     this._loader = loader;
   }
 
-  async load(url: string, options?: {}, clone = true) {
+  async load(url, options = {}, clone = true) {
     if (!url || url === "") return undefined;
 
     log && console.log("load begins for ", url);
@@ -53,7 +48,7 @@ export class LoaderManager {
 export function clearAssetCache() {
   for (const key in cacheMap) {
     if (cacheMap[key] != null && cacheMap[key].asset instanceof Object3D) {
-      cacheMap[key].asset?.traverse((child: any) => {
+      cacheMap[key].asset?.traverse((child) => {
         child.geometry?.dispose();
         child.material?.dispose();
       });

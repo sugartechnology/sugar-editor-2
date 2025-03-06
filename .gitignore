@@ -5,6 +5,8 @@ node_modules/**/*
 dist
 dist/*
 
-lib/threejs/docs
-lib/threejs/docs/*
-lib/threejs/docs/**/*
+src/editor/docs
+src/editor/docs/*
+src/editor/docs/**/*
+
+package-lock.json
