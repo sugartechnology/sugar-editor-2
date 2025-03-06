@@ -19,7 +19,7 @@ export const ProductProvider = ({ children }) => {
     }
 
     async function init() {
-        const res = await Api.fetchUserCompanyId();
+        const res = await Api.getCompanyId();
         setCompanyId(res);
 
         if (!companyMaterialGroups)
