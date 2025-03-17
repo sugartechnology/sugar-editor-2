@@ -62,17 +62,11 @@ function App({ viewDomElement }) {
       Dockable.DockMode.Full,
       <ViewportDockable viewDomElement={viewDomElement} />
     );
-    // Dockable.createDockedPanel(
-    //   state,
-    //   state.rootPanel,
-    //   Dockable.DockMode.Left,
-    //   <ProductList />
-    // );
     Dockable.createDockedPanel(
       state,
       state.rootPanel,
       Dockable.DockMode.Left,
-      <ModelRenders />
+      <ProductList />
     );
     Dockable.createDockedPanel(
       state,
