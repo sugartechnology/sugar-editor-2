@@ -1,12 +1,11 @@
-
 export const CONFIGURATOR_API_URL = "https://cdn.sugartech.io/api/configurator/";
 export const API_URL = "https://api.sugartech.io/api/dynamicTag/2/source2";
 
 const BACKEND_API = "https://cdn.sugartech.io/api/";
 const DEV_CDN_API = "https://cdn.sugartech.io/api/";
 
-let AUTH = "Basic " + btoa( "planner.default@sugartech.io:planner" );
-const token = localStorage.getItem( "auth" );
+let AUTH = "Basic " + btoa("planner.default@sugartech.io:planner");
+const token = localStorage.getItem("auth");
 
 /**
  * @typedef {Object} ProductPartGroup
@@ -25,87 +24,87 @@ const token = localStorage.getItem( "auth" );
  * @description Api class for handling api requests
  */
 export class Api {
-	static async fetchCatalog( identifier ) {
-		const data = await fetch( CONFIGURATOR_API_URL + identifier, {
+	static async fetchCatalog(identifier) {
+		const data = await fetch(CONFIGURATOR_API_URL + identifier, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
-		} );
+		});
 
 		return await data.json();
 	}
 
-	static async login( email, password ) {
+	static async login(email, password) {
 		const string = `${email}:${password}`;
 
-		const data = await fetch( BACKEND_API + "login", {
+		const data = await fetch(BACKEND_API + "login", {
 			headers: {
 				"Content-Type": "application/json",
-				Authorization: `Basic ${btoa( string )}`,
+				Authorization: `Basic ${btoa(string)}`,
 			},
-		} );
-		if ( data.status == 200 )
-			localStorage.setItem( "auth", `Basic ${btoa( string )}` );
+		});
+		if (data.status == 200)
+			localStorage.setItem("auth", `Basic ${btoa(string)}`);
 
 		return data.status;
 	}
 
-	static async fetchProductInfo( id ) {
-		if ( token ) {
-			const response = await fetch( BACKEND_API + "editor/get/product/" + id, {
+	static async fetchProductInfo(id) {
+		if (token) {
+			const response = await fetch(BACKEND_API + "editor/get/product/" + id, {
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: token,
 				},
-			} );
+			});
 
 			return await response.json();
 		}
 	}
 
-	static async fetchCategoryList( id ) {
-		if ( token ) {
-			const response = await fetch( DEV_CDN_API + "editor/category/list", {
+	static async fetchCategoryList(id) {
+		if (token) {
+			const response = await fetch(DEV_CDN_API + "editor/category/list", {
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: token,
 				},
-			} );
+			});
 
 			return await response.json();
 		}
 	}
 
 	static async fetchCompanies() {
-		if ( token ) {
-			const data = await fetch( DEV_CDN_API + "editor/company/list", {
+		if (token) {
+			const data = await fetch(DEV_CDN_API + "editor/company/list", {
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: token,
 				},
-			} );
+			});
 
 			return await data.json();
 		}
 	}
 
 	static async fetchGlobalCategories() {
-		if ( token ) {
-			const data = await fetch( BACKEND_API + "editor/global/category/list", {
+		if (token) {
+			const data = await fetch(BACKEND_API + "editor/global/category/list", {
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: token,
 				},
-			} );
+			});
 
 			return await data.json();
 		}
 	}
 
-	static async fetchProducts( pageNumber, searchKey ) {
-		if ( token ) {
-			if ( searchKey ) {
+	static async fetchProducts(pageNumber, searchKey) {
+		if (token) {
+			if (searchKey) {
 				const response = await fetch(
 					BACKEND_API +
 					"products/list?page=" +
@@ -135,22 +134,22 @@ export class Api {
 		}
 	}
 
-	static async fetchProduct( productId, companyId ) {
-		const url = new URL( API_URL );
-		url.searchParams.append( "productId", productId.toString() );
-		url.searchParams.append( "companyId", companyId.toString() );
+	static async fetchProduct(productId, companyId) {
+		const url = new URL(API_URL);
+		url.searchParams.append("productId", productId.toString());
+		url.searchParams.append("companyId", companyId.toString());
 
-		const data = await fetch( url.toString(), {
+		const data = await fetch(url.toString(), {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
-		} );
+		});
 
 		return await data.json();
 	}
 
-	static async fetchCustomerProduct( customerId, companyId ) {
+	static async fetchCustomerProduct(customerId, companyId) {
 		let data = await fetch(
 			API_URL +
 			"?" +
@@ -193,17 +192,17 @@ export class Api {
 			categoryIds,
 			globalCategoryIds,
 		};
-		if ( token ) {
-			const response = await fetch( BACKEND_API + "editor/save/updateProduct", {
+		if (token) {
+			const response = await fetch(BACKEND_API + "editor/save/updateProduct", {
 				method: "POST",
-				body: JSON.stringify( body ),
+				body: JSON.stringify(body),
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: token,
 				},
-			} );
+			});
 
-			console.log( name, "name " );
+			console.log(name, "name ");
 
 			return response.status;
 		}
@@ -214,8 +213,8 @@ export class Api {
 	 * @param {number} productId
 	 * @returns
 	 */
-	static async fetchProductPartGroups( productId ) {
-		if ( token ) {
+	static async fetchProductPartGroups(productId) {
+		if (token) {
 			try {
 				const response = await fetch(
 					BACKEND_API + "product/material/group/part/getInfo/" + productId,
@@ -229,8 +228,8 @@ export class Api {
 				);
 
 				return await response.json();
-			} catch ( err ) {
-				console.error( err );
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	}
@@ -240,8 +239,8 @@ export class Api {
 	 * @param {number} companyId
 	 * @returns
 	 */
-	static async fetchMaterialGroups( companyId ) {
-		if ( token ) {
+	static async fetchMaterialGroups(companyId) {
+		if (token) {
 			try {
 				const response = await fetch(
 					BACKEND_API + "material/group/list?companyId=" + companyId,
@@ -255,8 +254,8 @@ export class Api {
 				);
 
 				return await response.json();
-			} catch ( err ) {
-				console.error( err );
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	}
@@ -269,8 +268,8 @@ export class Api {
 	 * @returns {Promise<any>}
 	 * @static
 	 */
-	static async fetchMaterialSet( materialGroupId ) {
-		if ( token && materialGroupId ) {
+	static async fetchMaterialSet(materialGroupId) {
+		if (token && materialGroupId) {
 			try {
 				const response = await fetch(
 					BACKEND_API + "material/group/materials/" + materialGroupId,
@@ -284,8 +283,8 @@ export class Api {
 				);
 
 				return await response.json();
-			} catch ( err ) {
-				console.error( err );
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	}
@@ -296,8 +295,8 @@ export class Api {
 	 * @param {ProductPartGroup} productPartGroup
 	 * @returns {Promise<number>}
 	 */
-	static async updateProductPartGroup( productPartGroup ) {
-		if ( token ) {
+	static async updateProductPartGroup(productPartGroup) {
+		if (token) {
 			try {
 				const response = await fetch(
 					BACKEND_API + "product/material/group/part/update",
@@ -307,13 +306,13 @@ export class Api {
 							"Content-Type": "application/json",
 							Authorization: token,
 						},
-						body: JSON.stringify( productPartGroup ),
+						body: JSON.stringify(productPartGroup),
 					}
 				);
 
 				return response.status;
-			} catch ( err ) {
-				console.error( err );
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	}
@@ -323,8 +322,8 @@ export class Api {
 	 * @param {number} productId
 	 * @returns {Promise<any>}
 	 */
-	static async getProductParts( productId ) {
-		if ( token ) {
+	static async getProductParts(productId) {
+		if (token) {
 			try {
 				const response = await fetch(
 					BACKEND_API + "material/list/partAndRules/" + productId,
@@ -338,8 +337,8 @@ export class Api {
 				);
 
 				return response.json();
-			} catch ( err ) {
-				console.error( err );
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	}
@@ -349,8 +348,8 @@ export class Api {
 	 * @param {ProductPartGroup} productPartGroup
 	 * @returns
 	 */
-	static async addProductPartGroup( productPartGroup ) {
-		if ( token ) {
+	static async addProductPartGroup(productPartGroup) {
+		if (token) {
 			try {
 				const response = await fetch(
 					BACKEND_API + "product/material/group/part/add",
@@ -360,31 +359,31 @@ export class Api {
 							"Content-Type": "application/json",
 							Authorization: token,
 						},
-						body: JSON.stringify( productPartGroup ),
+						body: JSON.stringify(productPartGroup),
 					}
 				);
 
 				return response.status;
-			} catch ( err ) {
-				console.error( err );
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	}
 
 	static async getCompanyId() {
-		if ( token ) {
+		if (token) {
 			try {
-				const response = await fetch( BACKEND_API + "user/userCompanyId", {
+				const response = await fetch(BACKEND_API + "user/userCompanyId", {
 					method: "GET",
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: token,
 					},
-				} );
+				});
 
 				return await response.json();
-			} catch ( err ) {
-				console.error( err );
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	}
@@ -394,8 +393,8 @@ export class Api {
 	 * @param {number} id
 	 * @returns
 	 */
-	static async deleteProductPartGroup( id ) {
-		if ( token ) {
+	static async deleteProductPartGroup(id) {
+		if (token) {
 			try {
 				const response = await fetch(
 					BACKEND_API + "product/material/group/part/delete/" + id,
@@ -409,8 +408,8 @@ export class Api {
 				);
 
 				return response.status;
-			} catch ( err ) {
-				console.error( err );
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	}
@@ -429,27 +428,27 @@ export class Api {
 		name = undefined,
 		materialIds = null
 	) {
-		if ( token ) {
+		if (token) {
 			try {
-				const response = await fetch( BACKEND_API + "material/savegroup", {
+				const response = await fetch(BACKEND_API + "material/savegroup", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: token,
 					},
-					body: JSON.stringify( {
+					body: JSON.stringify({
 						id: id,
 						name: name,
 						materials: materialIds,
 						company: {
 							id: companyId,
 						},
-					} ),
-				} );
+					}),
+				});
 
 				return response.json();
-			} catch ( err ) {
-				console.error( err );
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	}
@@ -460,14 +459,14 @@ export class Api {
 	 * @param {string} searchKey
 	 * @returns
 	 */
-	static async listMaterials( pageNumber, searchKey ) {
-		const url = new URL( BACKEND_API + "material/listAndSearch" );
-		if ( searchKey ) {
-			url.searchParams.append( "searchKey", searchKey );
+	static async listMaterials(pageNumber, searchKey) {
+		const url = new URL(BACKEND_API + "material/listAndSearch");
+		if (searchKey) {
+			url.searchParams.append("searchKey", searchKey);
 		}
-		url.searchParams.append( "page", pageNumber );
-		if ( token ) {
-			const response = await fetch( url,
+		url.searchParams.append("page", pageNumber);
+		if (token) {
+			const response = await fetch(url,
 				{
 					headers: {
 						"Content-Type": "application/json",
@@ -485,8 +484,8 @@ export class Api {
 	 * @param {number} groupId
 	 * @returns {Promise<number>}
 	 */
-	static async removeMaterialFromGroup( materialId, groupId ) {
-		if ( token ) {
+	static async removeMaterialFromGroup(materialId, groupId) {
+		if (token) {
 			try {
 				const response = await fetch(
 					BACKEND_API + "material/remove/" + materialId + "/" + groupId,
@@ -500,8 +499,59 @@ export class Api {
 				);
 
 				return response.status;
-			} catch ( err ) {
-				console.error( err );
+			} catch (err) {
+				console.error(err);
+			}
+		}
+	}
+
+	static async uploadModel(data) {
+		if (token) {
+			try {
+				const response = await fetch(BACKEND_API + "model/create", {
+					method: "POST",
+					headers: {
+						Authorization: token,
+					},
+					body: data,
+				});
+
+				if (!response.ok) {
+					const errorText = await response.text();
+					console.error("Upload error:", errorText);
+				}
+
+				return response;
+			} catch (err) {
+				console.error("Upload error:", err);
+				throw err;
+			}
+		}
+	}
+
+	static async getModels(statusList, searchKey) {
+		if (token) {
+			try {
+				const url = new URL(BACKEND_API + "model");
+
+				if (searchKey) {
+					url.searchParams.append("name", searchKey);
+				}
+
+				if (statusList && statusList.length > 0) {
+					url.searchParams.append("status", statusList.join(','));
+				}
+
+				const response = await fetch(url, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: token,
+					},
+				});
+				return await response.json();
+			} catch (err) {
+				console.error(err);
 			}
 		}
 	}

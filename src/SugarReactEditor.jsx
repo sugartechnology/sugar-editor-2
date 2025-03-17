@@ -18,7 +18,7 @@ import ViewportDockable from "./dockableviews/ViewportDockable.jsx";
 import { Editor } from "./editor/js/Editor.js";
 import { Viewport } from "./editor/js/Viewport.js";
 import LoginScreen from "./LoginScreen.jsx";
-
+import ModelRenders from "./dockableviews/ModelRenders.jsx";
 function App({ viewDomElement }) {
 
   const [isAuth, setIsAuth] = useState(localStorage.getItem("auth"));
@@ -62,11 +62,17 @@ function App({ viewDomElement }) {
       Dockable.DockMode.Full,
       <ViewportDockable viewDomElement={viewDomElement} />
     );
+    // Dockable.createDockedPanel(
+    //   state,
+    //   state.rootPanel,
+    //   Dockable.DockMode.Left,
+    //   <ProductList />
+    // );
     Dockable.createDockedPanel(
       state,
       state.rootPanel,
       Dockable.DockMode.Left,
-      <ProductList />
+      <ModelRenders />
     );
     Dockable.createDockedPanel(
       state,
@@ -242,6 +248,18 @@ function Menu({ dockState, handleLogout }) {
           }} >
           <GoPlus />
           Scene
+        </div>
+        <div
+          id="dockableMenuOptions"
+          onClick={() => {
+            setIsOpen(false);
+            Dockable.spawnFloating(
+              dockState,
+              <ModelRenders />,
+            );
+          }} >
+          <GoPlus />
+          Models
         </div>
         <div
           id="dockableMenuOptions"

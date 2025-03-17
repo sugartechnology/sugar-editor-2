@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import * as Dockable from "@hlorenzi/react-dockable";
 import { Api } from '../api/Api';
 
