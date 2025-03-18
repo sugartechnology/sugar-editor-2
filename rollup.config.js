@@ -1,11 +1,11 @@
 import resolve from "@rollup/plugin-node-resolve";
 
-import clean from "@rollup-extras/plugin-clean";
+import babel from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import replace from "@rollup/plugin-replace";
-import babel from "rollup-plugin-babel";
-import livereload from "rollup-plugin-livereload";
+import terser from "@rollup/plugin-terser";
+import del from "rollup-plugin-delete";
 import postcss from "rollup-plugin-postcss";
 import serve from "rollup-plugin-serve";
 
@@ -20,34 +20,35 @@ export default {
     chunkFileNames: "[name]-[hash].js",
   },
   plugins: [
-    resolve(),
-    commonjs(),
-    postcss({
-      // for css import
-      extensions: [".css"],
-    }),
-    babel({
-      exclude: "node_modules/**", // Node modüllerini hariç tut
-      presets: ["@babel/preset-env", "@babel/preset-react"], // React ve ES6+
-    }),
-    json(),
-    clean(),
-    replace({
+    replace( {
       "process.env.NODE_ENV": JSON.stringify(
         process.env.NODE_ENV || "development"
       ),
       preventAssignment: true,
-    }),
-    // !process.env.ROLLUP_WATCH && terser(),
-    process.env.ROLLUP_WATCH &&
-      serve({
-        open: true, // Sunucu başladığında tarayıcıyı otomatik aç
-        contentBase: ["dist", "public", "src", "lib"], // Hem public hem de dist klasörlerini serve et
-        port: 7801,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-      }),
-    process.env.ROLLUP_WATCH && livereload(),
+      "'use client';": "",
+      '"use client";': "",
+    } ),
+    resolve(),
+    commonjs(),
+    postcss( {
+      extensions: [".css"],
+    } ),
+    babel( {
+      exclude: "node_modules/**",
+      presets: ["@babel/preset-env", "@babel/preset-react"],
+    } ),
+    json(),
+    del( {
+      targets: "dist/*",
+      runOnce: true,
+    } ),
+    terser(),
+    serve( {
+      contentBase: ["dist", "public", "src"],
+      port: 3000,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+    } ),
   ],
 };
