@@ -21,27 +21,3 @@ EXPOSE 3000
 
 # Start Rollup with live dev server
 CMD ["npx", "rollup", "-c", "--watch"]
-
-# Production environment
-FROM base AS build
-
-ENV NODE_ENV=production
-
-# Run Rollup build
-RUN npx rollup -c
-
-# Static file server
-FROM node:23-alpine AS prod
-
-WORKDIR /app
-
-# Install minimal dependencies
-RUN npm install -g serve
-
-# Copy built files from build stage
-COPY --from=build /app/dist ./dist
-
-EXPOSE 5000
-
-# Serve built static files
-CMD ["serve", "dist"]

@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
 import * as Dockable from "@hlorenzi/react-dockable";
+import React, { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import AddButton from "../components/AddButton.jsx";
-import { Api } from "../api/Api.js";
+import { ThreeDot } from "react-loading-indicators";
 import Select from "react-select";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ThreeDot } from "react-loading-indicators";
+import { Api } from "../api/Api.js";
+import AddButton from "../components/AddButton.jsx";
 
 function ModelRenders() {
     const ctx = Dockable.useContentContext();
@@ -86,10 +86,7 @@ function ModelRenders() {
         try {
             setIsLoading(true);
             const statusValues = selectedStatus.map(option => option.value);
-            console.log("Arama metni:", searchText);
-            console.log("Seçili statusler:", statusValues);
             const res = await Api.getModels(statusValues, searchText);
-            console.log("Response:", res);
             setModels(res);
         } catch (error) {
             console.error(error);
@@ -104,7 +101,14 @@ function ModelRenders() {
             if (event.key != "Enter")
                 event.stopPropagation();
         });
+
         handleSearch();
+
+        const intervalId = setInterval(() => {
+            handleSearch();
+        }, 5000);
+
+        return () => clearInterval(intervalId);
     }, []);
 
     function handleFileSelect(event) {

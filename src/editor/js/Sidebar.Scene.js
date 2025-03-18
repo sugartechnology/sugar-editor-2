@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { UIPanel, UIBreak, UIRow, UIColor, UISelect, UIText, UINumber } from './libs/ui.js';
+import { UIBreak, UIColor, UINumber, UIPanel, UIRow, UISelect, UIText } from './libs/ui.js';
 import { UIOutliner, UITexture } from './libs/ui.three.js';
 
 function SidebarScene(editor) {
@@ -236,13 +236,14 @@ function SidebarScene(editor) {
 		'ModelViewer': 'ModelViewer'
 
 	}).setWidth('150px');
-	environmentType.setValue('ModelViewer');
+
 	environmentType.onChange(function () {
 
 		onEnvironmentChanged();
 		refreshEnvironmentUI();
 
 	});
+	environmentType.setValue('ModelViewer');
 
 	environmentRow.add(new UIText(strings.getKey('sidebar/scene/environment')).setClass('Label'));
 	environmentRow.add(environmentType);

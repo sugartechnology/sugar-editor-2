@@ -202,8 +202,6 @@ export class Api {
 				},
 			});
 
-			console.log(name, "name ");
-
 			return response.status;
 		}
 	}

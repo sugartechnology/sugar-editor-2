@@ -20,6 +20,10 @@ export default {
     chunkFileNames: "[name]-[hash].js",
   },
   plugins: [
+    del( {
+      targets: "dist/*",
+      runOnce: true,
+    } ),
     replace( {
       "process.env.NODE_ENV": JSON.stringify(
         process.env.NODE_ENV || "development"
@@ -38,10 +42,6 @@ export default {
       presets: ["@babel/preset-env", "@babel/preset-react"],
     } ),
     json(),
-    del( {
-      targets: "dist/*",
-      runOnce: true,
-    } ),
     terser(),
     serve( {
       contentBase: ["dist", "public", "src"],

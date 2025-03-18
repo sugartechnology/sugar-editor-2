@@ -209,7 +209,7 @@ export default function EditMaterialGroup({ materialGroup }) {
 
                         <LazyListComponent
                             apiFunction={Api.listMaterials}
-                            onClickItem={(item) => console.log(item)}
+                            // onClickItem={(item) => console.log(item)}
                             maxHeight={"500px"}
                             defaultViewType={1}
                             isMultiSelect={true}

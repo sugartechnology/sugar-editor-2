@@ -1,24 +1,15 @@
 version: "3.8"
 
 services:
-  app-dev:
+  editor:
     build:
       context: .
       target: dev
     ports:
-      - "3000:3000"
+      - "9439:3000"
     volumes:
       - .:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
     command: npx rollup -c --watch
-
-  app-prod:
-    build:
-      context: .
-      target: prod
-    ports:
-      - "9439:5000"
-    environment:
-      - NODE_ENV=production
