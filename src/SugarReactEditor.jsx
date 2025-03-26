@@ -106,7 +106,7 @@ function App({ viewDomElement }) {
           top: "0vh",
           paddingTop: "5vh",
           paddingBottom: "5vh",
-          zIndex: "999",
+          zIndex: "9",
         }}
       >
         <Dockable.Container state={dockState} />
