@@ -20,7 +20,6 @@ function ModelRenders() {
     const inputref = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [previewUrls, setPreviewUrls] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
 
     const statusOptions = [
         { value: "PENDING", label: "PENDING" },
@@ -84,15 +83,12 @@ function ModelRenders() {
 
     async function handleSearch() {
         try {
-            setIsLoading(true);
             const statusValues = selectedStatus.map(option => option.value);
             const res = await Api.getModels(statusValues, searchText);
             setModels(res);
         } catch (error) {
             console.error(error);
             toast.error('Modeller yüklenirken bir hata oluştu');
-        } finally {
-            setIsLoading(false);
         }
     }
 
@@ -136,7 +132,6 @@ function ModelRenders() {
         }
 
         try {
-            setIsLoading(true);
             const formData = new FormData();
             selectedFiles.forEach(file => {
                 formData.append("sourceFile", file);
@@ -156,8 +151,6 @@ function ModelRenders() {
         } catch (error) {
             console.error(error);
             errorMessage();
-        } finally {
-            setIsLoading(false);
         }
     }
 
@@ -204,22 +197,6 @@ function ModelRenders() {
 
     return (
         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", backgroundColor: "#111", position: "relative" }} ref={inputref}>
-            {isLoading && (
-                <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: 'rgba(0,0,0,0.7)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    zIndex: 1000
-                }}>
-                    <ThreeDot color="#828d8a" size="medium" />
-                </div>
-            )}
             <ToastContainer position="bottom-left"
                 autoClose={5000}
                 hideProgressBar
