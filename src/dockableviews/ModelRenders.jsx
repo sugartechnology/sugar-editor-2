@@ -14,12 +14,12 @@ function ModelRenders() {
     const [searchText, setSearchText] = useState("");
     const [selectedStatus, setSelectedStatus] = useState([]);
     const [modelName, setModelName] = useState("");
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFiles, setSelectedFiles] = useState([]);
     const [isUploadAreaVisible, setIsUploadAreaVisible] = useState(false);
     const [models, setModels] = useState([]);
     const inputref = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
-    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewUrls, setPreviewUrls] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const statusOptions = [
@@ -112,22 +112,18 @@ function ModelRenders() {
     }, []);
 
     function handleFileSelect(event) {
-        const file = event.target.files[0];
-        setSelectedFile(file);
+        const files = Array.from(event.target.files);
+        setSelectedFiles(files);
 
-        if (previewUrl) {
-            URL.revokeObjectURL(previewUrl);
-        }
+        previewUrls.forEach(url => URL.revokeObjectURL(url));
 
-        if (file) {
-            const url = URL.createObjectURL(file);
-            setPreviewUrl(url);
-        }
+        const urls = files.map(file => URL.createObjectURL(file));
+        setPreviewUrls(urls);
     }
 
     async function handleUpload() {
-        if (!selectedFile || !modelName) {
-            toast.warning('Lütfen bir dosya ve model ismi giriniz', {
+        if (selectedFiles.length === 0 || !modelName) {
+            toast.warning('Lütfen dosya(lar) ve model ismi giriniz', {
                 position: "bottom-left",
                 autoClose: 5000,
                 hideProgressBar: true,
@@ -142,13 +138,15 @@ function ModelRenders() {
         try {
             setIsLoading(true);
             const formData = new FormData();
-            formData.append("sourceFile", selectedFile);
+            selectedFiles.forEach(file => {
+                formData.append("sourceFile", file);
+            });
             formData.append("name", modelName);
             const res = await Api.uploadModel(formData);
             if (res.ok) {
                 successMessage();
-                setSelectedFile(null);
-                setPreviewUrl(null);
+                setSelectedFiles([]);
+                setPreviewUrls([]);
                 setModelName("");
                 setIsUploadAreaVisible(false);
                 handleSearch();
@@ -176,22 +174,33 @@ function ModelRenders() {
     function handleDrop(event) {
         event.preventDefault();
         setIsDragging(false);
-        const files = event.dataTransfer.files;
-        if (files.length > 0) {
-            setSelectedFile(files[0]);
-            if (previewUrl) URL.revokeObjectURL(previewUrl);
-            const url = URL.createObjectURL(files[0]);
-            setPreviewUrl(url);
-        }
+        const files = Array.from(event.dataTransfer.files);
+        setSelectedFiles(files);
+
+        previewUrls.forEach(url => URL.revokeObjectURL(url));
+
+        const urls = files.map(file => URL.createObjectURL(file));
+        setPreviewUrls(urls);
     }
 
     useEffect(() => {
         return () => {
-            if (previewUrl) {
-                URL.revokeObjectURL(previewUrl);
-            }
+            previewUrls.forEach(url => {
+                URL.revokeObjectURL(url);
+            });
         };
-    }, [previewUrl]);
+    }, [previewUrls]);
+
+    function handleRemoveFile(indexToRemove) {
+        setSelectedFiles(prevFiles =>
+            prevFiles.filter((_, index) => index !== indexToRemove)
+        );
+
+        setPreviewUrls(prevUrls => {
+            URL.revokeObjectURL(prevUrls[indexToRemove]);
+            return prevUrls.filter((_, index) => index !== indexToRemove);
+        });
+    }
 
     return (
         <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", backgroundColor: "#111", position: "relative" }} ref={inputref}>
@@ -266,25 +275,84 @@ function ModelRenders() {
                             type="file"
                             onChange={handleFileSelect}
                             accept=".jpg,.png,.jpeg,.stl,.obj"
+                            multiple
                             style={{ display: 'none' }}
                         />
-                        {selectedFile ? (
-                            <div style={{ textAlign: 'center', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
-                                <img
-                                    src={previewUrl}
-                                    alt="Preview"
-                                    style={{
-                                        maxWidth: '80%',
-                                        maxHeight: '120px',
-                                        objectFit: 'contain',
-                                        borderRadius: '4px'
-                                    }}
-                                />
-                                <div style={{ color: '#888', fontSize: '12px' }}>{selectedFile.name}</div>
+                        {selectedFiles.length > 0 ? (
+                            <div style={{
+                                textAlign: 'center',
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '10px',
+                                overflowY: 'auto'
+                            }}>
+                                <div style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+                                    gap: '5px',
+                                    width: '100%',
+                                    padding: '10px'
+                                }}>
+                                    {previewUrls.map((url, index) => (
+                                        <div key={index} style={{
+                                            position: 'relative',
+                                            width: '80px',
+                                            height: '80px'
+                                        }}>
+                                            <div
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleRemoveFile(index);
+                                                }}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '-8px',
+                                                    right: '-8px',
+                                                    width: '20px',
+                                                    height: '20px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: '#d42',
+                                                    color: 'white',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    cursor: 'pointer',
+                                                    fontSize: '14px',
+                                                    zIndex: 2
+                                                }}
+                                            >
+                                                ×
+                                            </div>
+                                            <img
+                                                src={url}
+                                                alt={`Preview ${index + 1}`}
+                                                style={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover',
+                                                    borderRadius: '4px'
+                                                }}
+                                            />
+                                            <div style={{
+                                                color: '#888',
+                                                fontSize: '10px',
+                                                textOverflow: 'ellipsis',
+                                                overflow: 'hidden',
+                                                whiteSpace: 'nowrap'
+                                            }}>
+                                                {selectedFiles[index].name}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         ) : (
                             <div style={{ textAlign: 'center' }}>
-                                <div>Dosyayı sürükleyin</div>
+                                <div>Dosyaları sürükleyin</div>
                                 <div style={{ marginTop: '5px' }}>veya</div>
                                 <div style={{ marginTop: '5px' }}>tıklayıp seçin</div>
                             </div>

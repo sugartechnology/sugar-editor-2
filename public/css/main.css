@@ -968,6 +968,10 @@ select:hover {
 
 }
 
+.bLtMkR{
+  height: 95vh !important;
+}
+
 #app {
   display: flex;
   flex-direction: column;
@@ -978,7 +982,9 @@ select:hover {
 
 
 #dockableMenu {
-  position: relative;
+  position: absolute;
+  top: 0px;
+  z-index: 999;
   display: flex;
   height: 5vh;
   width: 100%;
@@ -1250,7 +1256,6 @@ select:hover {
   flex-direction: column;
   gap: 10px;
   width: 95%;
-  /* height: 85%; */
   overflow-y: scroll;
   overflow-x: none;
   background-color: #111;

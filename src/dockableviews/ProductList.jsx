@@ -19,7 +19,6 @@ export default function ProductList() {
             <LazyListComponent
                 apiFunction={Api.fetchProducts}
                 onClickItem={toggleYukle}
-                height={"85%"}
             />
         </div >
     );

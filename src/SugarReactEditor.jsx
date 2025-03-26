@@ -66,8 +66,15 @@ function App({ viewDomElement }) {
       state,
       state.rootPanel,
       Dockable.DockMode.Left,
+      <ModelRenders />
+    );
+    Dockable.createDockedPanel(
+      state,
+      state.rootPanel.splitPanels[0],
+      Dockable.DockMode.Full,
       <ProductList />
     );
+
     Dockable.createDockedPanel(
       state,
       state.rootPanel,
@@ -91,8 +98,15 @@ function App({ viewDomElement }) {
       <div
         style={{
           width: "100vw",
-          height: "95vh",
-          position: "relative"
+          height: "100vh",
+          position: "absolute",
+          bottom: "0px",
+          left: "0px",
+          right: "0px",
+          top: "0vh",
+          paddingTop: "5vh",
+          paddingBottom: "5vh",
+          zIndex: "999",
         }}
       >
         <Dockable.Container state={dockState} />
@@ -165,7 +179,7 @@ function Menu({ dockState, handleLogout }) {
       </div>
 
       <div id="sugarTitle"> <FaCube />{"<Sugar-Model-Viewer>"}</div>
-      <div id="dockableMenuOpen" style={{ width: isOpen ? "300px" : "0px", opacity: isOpen ? 1 : 0, zIndex: isOpen ? 3 : -1 }}>
+      <div id="dockableMenuOpen" style={{ width: isOpen ? "300px" : "0px", opacity: isOpen ? 1 : 0, zIndex: isOpen ? 3 : -1, display: isOpen ? "flex" : "none" }}>
         <div id="closeMenuIcon" onClick={() => setIsOpen(!isOpen)}>
           <MdClose color="#888" size={25} />
         </div>
